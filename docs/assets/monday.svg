@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 250" width="900" height="250" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <style>
+    .bg { fill: #0b0b0b; }
+    .h { fill: #ffffff; font-size: 13px; letter-spacing: 3px; font-weight: 700; }
+    .t { fill: #ffffff; font-size: 14px; }
+    .m { fill: #9a9a9a; font-size: 12px; }
+    .big { font-size: 40px; font-weight: 800; }
+    .bad { fill: #ff4d4d; }
+    .good { fill: #2ecc71; }
+    .or { fill: #ff7a00; }
+    .bar-bad { fill: #ff4d4d; transform-origin: left; animation: grow 3s ease-in-out infinite alternate; }
+    .bar-good { fill: #2ecc71; transform-origin: left; animation: grow2 3s ease-in-out infinite alternate; }
+    @keyframes grow { from { transform: scaleX(.15); } to { transform: scaleX(1); } }
+    @keyframes grow2 { from { transform: scaleX(1); } to { transform: scaleX(.12); } }
+    .div { stroke: #ff7a00; stroke-width: 1.5; stroke-dasharray: 4 6; }
+  </style>
+  <rect class="bg" width="900" height="250" rx="14"/>
+  <line class="div" x1="450" y1="30" x2="450" y2="220"/>
+
+  <text x="40" y="40" class="h">BEFORE: THE MONDAY SCRAMBLE</text>
+  <text x="40" y="100" class="big bad">Hours</text>
+  <text x="40" y="128" class="t">pulling exports from 6+ tools</text>
+  <text x="40" y="156" class="t">Marketing's revenue ≠ Finance's revenue</text>
+  <text x="40" y="184" class="t">Decisions wait for the spreadsheet</text>
+  <rect class="bar-bad" x="40" y="204" width="360" height="12" rx="6"/>
+  <text x="408" y="215" class="m">time to answer</text>
+
+  <text x="490" y="40" class="h">AFTER: AUTOMATED</text>
+  <text x="490" y="100" class="big good">Minutes</text>
+  <text x="490" y="128" class="t">data lands and updates itself</text>
+  <text x="490" y="156" class="t">One definition of every metric</text>
+  <text x="490" y="184" class="t">Decide first thing Monday</text>
+  <rect class="bar-good" x="490" y="204" width="360" height="12" rx="6"/>
+  <text x="860" y="215" class="m" text-anchor="end"></text>
+</svg>

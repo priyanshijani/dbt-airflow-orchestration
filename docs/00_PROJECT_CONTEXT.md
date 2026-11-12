@@ -25,9 +25,29 @@ An orchestrated, analytics-ready data warehouse for a direct-to-consumer (DTC) e
 | — | [Decision Log](DECISION_LOG.md) | Every significant decision, with context and trade-offs |
 
 ## Current status
-- **Phase:** 1 to 4 done and tested. Full dbt build 104/104; Insights Hub (home, Revenue & Growth Dashboard, Pipeline Health) restyled to the navy theme (ADR-027) and dbt docs running. Next: Phase 5, AI agents (needs `GEMINI_API_KEY`).
-- **Last updated:** 2026-11-02
+- **Phase:** 1 to 4 done and tested (dbt build 104/104). Phase 5 started: the Insight Narrator and the Weekly Brief page are written and pass offline tests in mock mode (ADR-028); next is running them on the live stack, then one recorded live Gemini run. Triage and drift agents not started.
+- **Last updated:** 2026-11-12
 - See [09_PROJECT_PLAN.md](09_PROJECT_PLAN.md) for task-level status.
+
+### Session handoff (2026-11-12): Weekly AI Brief (Insight Narrator) built, not yet run live
+**Built (see [ADR-028](DECISION_LOG.md#adr-028)):**
+- `agents/core/llm.py` (modes live/mock/off, token caps, 429 backoff; Gemini only), `agents/core/tools.py` (SELECT-on-`marts.*` guard, `agent_reader` client).
+- `agents/narrator/`: `detect.py` (5 fixed queries E1-E5 + deterministic findings S1..), `prompts.py`, `mock.py` (rule-based stand-in for the model), `brief.py` (verify: drops drivers with no evidence or figures not in the data; render Markdown), `run.py` (orchestrates, writes `ai.briefs`, `ai.agent_runs`, `reports/weekly_brief_<week>.md`).
+- `dags/ai_insight_narrator.py`: Mondays 06:00 UTC, paused on creation, params `force` and `week`.
+- `insights_hub/pages/3_Weekly_Brief.py` (+ nav entry in `app.py`), "Generate now" calls the Airflow REST API.
+- `agents/tests/test_narrator.py`: 8 offline tests (`make test-agents`), fake data reproduces planted stories 4 and 5.
+- Makefile: `make brief`, `make test-agents`. README rewritten for business readers (animated SVGs in `docs/assets/`).
+
+**Verified:** the 8 offline tests only. **Not verified:** nothing has run on the live stack, because Docker Desktop was not installed on the dev machine this session. The DAG and Hub page were only syntax-checked. The Hub's Airflow auth call (`GET /auth/token`) is a guess for the all-admins simple auth manager.
+
+**Next session, in order:**
+1. Install/start Docker Desktop, `docker compose up -d --build`, then `make brief` (mock, free) and check http://localhost:8501 Weekly Brief. Fix whatever breaks (first live run of the DAG, page and `ai.*` DDL).
+2. Run `python -m insights_hub.tests.test_pages` in the hub container to include the new page.
+3. Advance the simulator to Jan 25 (`make simulate-day` x7) and confirm the brief names story 5 (payment failures); the Jan 12-18 week should name story 4 (Google spend, no traffic).
+4. Live run: owner sets `LLM_MODEL_REASONING` in `.env` (a model the Gemini key can use), then ONE live run with `AI_MODE=live make brief ARGS="--force"`. Tell the owner before calling, per CLAUDE.md rule 4. Compare with the mock brief; record as a fixture if wanted.
+5. Remaining Phase 5: Failure Triage, Schema Drift, evals, AI Ops page, `make break-ads-schema`, `.mcp.json` docs.
+
+**Gotchas:** the owner's keys live in `.env` (gitignored). It was first saved as `env` (no dot), which is NOT ignored and holds real keys; renamed to `.env` this session. Never print or commit it. `reports/*.md` is gitignored by design.
 
 ## Credentials (requested only when a phase needs them)
 

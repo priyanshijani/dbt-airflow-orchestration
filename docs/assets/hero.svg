@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 330" width="900" height="330" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <style>
+    .bg { fill: #0b0b0b; }
+    .src { fill: #161616; stroke: #ff7a00; stroke-width: 1.5; }
+    .lbl { fill: #ffffff; font-size: 14px; font-weight: 600; }
+    .sub { fill: #9a9a9a; font-size: 11px; }
+    .flow { stroke: #ff7a00; stroke-width: 2; fill: none; stroke-dasharray: 6 8; animation: dash 1.2s linear infinite; }
+    @keyframes dash { to { stroke-dashoffset: -28; } }
+    .hub { fill: #ff7a00; animation: glow 2.4s ease-in-out infinite; }
+    @keyframes glow { 0%,100% { opacity: 1; } 50% { opacity: .82; } }
+    .hubt { fill: #0b0b0b; font-size: 20px; font-weight: 800; }
+    .hubs { fill: #0b0b0b; font-size: 12px; font-weight: 600; }
+    .out { fill: #ffffff; }
+    .outt { fill: #0b0b0b; font-size: 13px; font-weight: 700; }
+    .title { fill: #ffffff; font-size: 13px; letter-spacing: 3px; font-weight: 700; }
+    .pulse { animation: pulse 2.4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+  </style>
+  <rect class="bg" width="900" height="330" rx="14"/>
+
+  <text x="40" y="34" class="title">YOUR DATA TODAY</text>
+  <text x="372" y="34" class="title">ONE PLACE</text>
+  <text x="652" y="34" class="title">MONDAY MORNING</text>
+
+  <!-- sources -->
+  <g>
+    <rect class="src" x="30" y="50" width="200" height="38" rx="8"/><text class="lbl" x="46" y="74">Website traffic</text><text class="sub" x="160" y="74">GA4</text>
+    <rect class="src" x="30" y="94" width="200" height="38" rx="8"/><text class="lbl" x="46" y="118">Orders &amp; customers</text><text class="sub" x="190" y="118">Shop</text>
+    <rect class="src" x="30" y="138" width="200" height="38" rx="8"/><text class="lbl" x="46" y="162">Paid ads</text><text class="sub" x="150" y="162">Meta, Google</text>
+    <rect class="src" x="30" y="182" width="200" height="38" rx="8"/><text class="lbl" x="46" y="206">Email campaigns</text>
+    <rect class="src" x="30" y="226" width="200" height="38" rx="8"/><text class="lbl" x="46" y="250">Budget plan</text><text class="sub" x="150" y="250">Excel</text>
+    <rect class="src" x="30" y="270" width="200" height="38" rx="8"/><text class="lbl" x="46" y="294">Market context</text><text class="sub" x="160" y="294">Weather, FRED</text>
+  </g>
+
+  <!-- flows -->
+  <g>
+    <path class="flow" d="M230 69 C 300 69, 320 150, 380 150"/>
+    <path class="flow" d="M230 113 C 300 113, 320 156, 380 156"/>
+    <path class="flow" d="M230 157 C 300 157, 330 162, 380 162"/>
+    <path class="flow" d="M230 201 C 300 201, 330 168, 380 168"/>
+    <path class="flow" d="M230 245 C 300 245, 320 174, 380 174"/>
+    <path class="flow" d="M230 289 C 300 289, 320 180, 380 180"/>
+  </g>
+
+  <!-- hub -->
+  <rect class="hub" x="380" y="110" width="150" height="110" rx="14"/>
+  <text class="hubt" x="455" y="158" text-anchor="middle">INSIGHTS</text>
+  <text class="hubt" x="455" y="182" text-anchor="middle">HUB</text>
+  <text class="hubs" x="455" y="204" text-anchor="middle">one set of numbers</text>
+
+  <!-- outputs -->
+  <path class="flow" d="M530 140 L 640 90"/>
+  <path class="flow" d="M530 165 L 640 165"/>
+  <path class="flow" d="M530 190 L 640 240"/>
+  <g>
+    <rect class="out" x="640" y="66" width="230" height="48" rx="10"/><text class="outt" x="656" y="86">Why did revenue move?</text><text class="outt" x="656" y="104" style="font-weight:500">Answered, with evidence</text>
+    <rect class="out" x="640" y="141" width="230" height="48" rx="10"/><text class="outt" x="656" y="161">Where should budget go?</text><text class="outt" x="656" y="179" style="font-weight:500">ROAS, CAC, LTV by channel</text>
+    <rect class="out" x="640" y="216" width="230" height="48" rx="10"/><text class="outt" x="656" y="236">Can I trust the numbers?</text><text class="outt" x="656" y="254" style="font-weight:500">Pipeline health, live</text>
+  </g>
+  <circle class="pulse" cx="885" cy="45" r="4" fill="#ff7a00"/>
+</svg>

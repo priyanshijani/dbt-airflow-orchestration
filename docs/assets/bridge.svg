@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 340" width="900" height="340" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <style>
+    .bg { fill: #0b0b0b; }
+    .h { fill: #ffffff; font-size: 13px; letter-spacing: 3px; font-weight: 700; }
+    .l { fill: #ffffff; font-size: 13px; text-anchor: middle; }
+    .v { font-size: 14px; font-weight: 700; text-anchor: middle; }
+    .note { fill: #9a9a9a; font-size: 11px; }
+    .axis { stroke: #333; stroke-width: 1; }
+    .base { fill: #ff7a00; }
+    .up { fill: #2ecc71; }
+    .down { fill: #ff4d4d; }
+    .bar { transform-box: fill-box; transform-origin: bottom; animation: rise 1.2s ease-out both; }
+    .d1 { animation-delay: .1s } .d2 { animation-delay: .4s } .d3 { animation-delay: .7s } .d4 { animation-delay: 1s } .d5 { animation-delay: 1.3s }
+    @keyframes rise { from { transform: scaleY(0); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+  </style>
+  <rect class="bg" width="900" height="340" rx="14"/>
+  <text x="40" y="36" class="h">WHY DID REVENUE MOVE?  (WEEK-OVER-WEEK BRIDGE)</text>
+  <line class="axis" x1="40" y1="270" x2="860" y2="270"/>
+
+  <!-- scale: 1000 revenue pts => ~ 1px per 100 -->
+  <!-- Last week -->
+  <rect class="base bar d1" x="70" y="110" width="90" height="160" rx="4"/>
+  <text class="v" x="115" y="100" fill="#ff7a00">$100k</text>
+  <text class="l" x="115" y="292">Last week</text>
+
+  <!-- Traffic +8k -->
+  <rect class="up bar d2" x="215" y="97" width="90" height="13" rx="4"/>
+  <text class="v" x="260" y="87" fill="#2ecc71">+$8k</text>
+  <text class="l" x="260" y="292">Traffic</text>
+
+  <!-- Conversion -12k -->
+  <rect class="down bar d3" x="360" y="97" width="90" height="19" rx="4"/>
+  <text class="v" x="405" y="136" fill="#ff4d4d">−$12k</text>
+  <text class="l" x="405" y="292">Conversion</text>
+
+  <!-- Order value +6k -->
+  <rect class="up bar d4" x="505" y="106" width="90" height="10" rx="4"/>
+  <text class="v" x="550" y="96" fill="#2ecc71">+$6k</text>
+  <text class="l" x="550" y="292">Order value</text>
+
+  <!-- Promo / channel -3k -->
+  <rect class="down bar d5" x="650" y="106" width="90" height="5" rx="4"/>
+  <text class="v" x="695" y="131" fill="#ff4d4d">−$3k</text>
+  <text class="l" x="695" y="292">Email promo</text>
+
+  <!-- This week -->
+  <rect class="base bar d5" x="795" y="112" width="65" height="158" rx="4" style="animation-delay:1.6s"/>
+  <text class="v" x="827" y="102" fill="#ff7a00">$99k</text>
+  <text class="l" x="827" y="292">This week</text>
+
+  <text class="note" x="40" y="322">Illustrative example. The Hub computes this bridge from real data; the AI-written explanation is on the roadmap.</text>
+</svg>

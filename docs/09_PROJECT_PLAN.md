@@ -66,17 +66,17 @@ Status legend: ✅ done · 🔄 in progress · ⬜ not started · ⏸ blocked
 | Insights Hub visual pass: navy theme, summary blocks, KPI Overview → Revenue & Growth Dashboard (ADR-027) | ✅ all pages restyled; smoke test passes; checked in a browser at 1440 px |
 | dbt docs service | ✅ :8081, regenerated hourly |
 
-## Phase 5: AI agents ⬜
+## Phase 5: AI agents 🔄
 **Keys needed: `GEMINI_API_KEY`** (free, Google AI Studio; requested at the start of this phase).
 | Task | Status |
 |---|---|
-| `agents/core`: LLM wrapper (modes, caps, cost log), safe SQL tool | ⬜ |
-| Insight Narrator: detection SQL → drill-down loop → structured brief → verification → render | ⬜ |
+| `agents/core`: LLM wrapper (modes, caps, cost log), safe SQL tool | ✅ `llm.py` (mock/live/off, caps, 429 backoff), `tools.py` (SELECT-on-marts guard); usage logged to `ai.agent_runs` |
+| Insight Narrator: detection SQL → structured brief → verification → render (ADR-028; drill-down loop deferred) | ✅ built, 8 offline tests pass; 🔄 not yet run on the live stack; live Gemini run not yet done |
 | Failure Triage: `on_failure_callback`, context collector, classify, diagnose | ⬜ |
 | Schema Drift Assistant → `proposals/` | ⬜ |
 | Mock fixtures recorded from one live run each | ⬜ |
 | Evals for planted stories and chaos scenarios | ⬜ |
-| Insights Hub: Weekly Brief and AI Ops pages, "Generate now" button | ⬜ |
+| Insights Hub: Weekly Brief page, "Generate now" button | ✅ written, not yet checked in a browser; AI Ops page ⬜ |
 | `make break-ads-schema` chaos demo | ⬜ |
 | `.mcp.json` + Dev Accelerator documentation | ⬜ |
 

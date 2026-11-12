@@ -3,7 +3,7 @@
 COMPOSE = docker compose
 AIRFLOW = $(COMPOSE) exec airflow
 
-.PHONY: dbt env up down reset ps logs generate regenerate release simulate-day smoke
+.PHONY: dbt env up down reset ps logs generate regenerate release simulate-day smoke brief test-agents
 
 env:            ## create .env from the template if it doesn't exist
 	@test -f .env || cp .env.example .env
@@ -40,3 +40,9 @@ smoke:          ## run the infrastructure smoke-test DAG end to end
 
 dbt:            ## run dbt without Airflow, e.g. make dbt ARGS="build --select staging"
 	docker compose run --rm --no-deps --entrypoint /opt/airflow/dbt-venv/bin/dbt airflow $(ARGS) --project-dir /opt/project/dbt --profiles-dir /opt/project/dbt --no-use-colors
+
+brief:          ## write the weekly AI brief now (mock unless AI_MODE=live), e.g. make brief ARGS="--force"
+	$(AIRFLOW) python -m agents.narrator.run $(ARGS)
+
+test-agents:    ## offline tests for the AI agents (no DB, no key, no cost)
+	python -m unittest agents.tests.test_narrator -v

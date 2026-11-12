@@ -377,3 +377,17 @@ Each entry is a lightweight Architecture Decision Record (ADR). New decisions ar
   6. **The shared ClickHouse client runs without a server session** (`autogenerate_session_id=False`). With a session, two browser tabs loading at once failed with "concurrent queries within the same session".
 - **Alternatives:** a custom component or a JS front end (more to maintain for a portfolio UI); the reference's monthly bars (the data spans under three months, so weekly bars say more).
 - **Consequences:** The Figtree font loads from Google Fonts; offline it falls back to the system sans. Recreate the hub container once (`docker compose up -d insights-hub`) to pick up the theme mount.
+
+<a id="adr-028"></a>
+## ADR-028 · Insight Narrator v1: one evidence pack, one model call, verified output
+- **Date:** 2026-11-12 · **Status:** Accepted. Amends the narrator design in 04_ARCHITECTURE §7 (drill-down loop) and ADR-015 (fixtures).
+- **Context:** The architecture described an agent that loops over tool calls to drill down. On the Gemini free tier (ADR-017) that costs up to 10 requests per run, is slow, and is harder to verify. The marts already hold what "why did revenue move?" needs (revenue bridge, channel performance, daily KPIs, GA4 vs shop orders).
+- **Decision:**
+  1. **Detection is deterministic.** `agents/narrator/detect.py` runs five fixed, reviewed queries for the latest complete week and the week before (E1 to E5) and derives findings in Python (channel moves, conversion shift, spend without traffic, ROAS drop, shop orders vs GA4 purchases, weak day). No number is computed by the model.
+  2. **One structured model call** explains the evidence in plain English. Each driver must cite evidence ids.
+  3. **Verification before display** (`brief.py`): a driver is dropped if it cites no real evidence or quotes a dollar amount or percentage that is not in the evidence. Drops are shown on the page, not hidden.
+  4. **Mock mode is a rule-based explainer** (`mock.py`) that returns the same JSON schema, so the zero-key path (ADR-006) shows a real, data-grounded brief. Live mode replaces only the explanation step. Recorded fixtures are deferred.
+  5. **Governed access:** reads marts as `agent_reader`, writes `ai.briefs` and `ai.agent_runs` as `ai_writer`. The SQL guard (`core/tools.py`) allows SELECT on `marts.*` only, on top of the database profile limits.
+  6. The DAG `ai_insight_narrator` runs Mondays 06:00 UTC (paused on creation, like the other schedules, ADR-024) or on demand from the Hub. It skips when a brief for that week already exists.
+- **Alternatives:** the full tool-calling drill-down loop (more flexible, more quota, harder to verify); passing raw tables to the model (cost, hallucination risk).
+- **Consequences:** The brief can only discuss what the five evidence queries cover. Adding a new kind of finding means adding a detector, which is deliberate. The drill-down loop can be added later on top of the same guard and verifier. Live output quality is untested until a model is chosen in `LLM_MODEL_REASONING`.
