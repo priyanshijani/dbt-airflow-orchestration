@@ -1,0 +1,5 @@
+date,campaign_id,campaign_name,advertising_channel_type,impressions,clicks,cost_micros,conversions,conversions_value
+12/14/2025,20190001,KG | Brand | Exact,SEARCH,1128,78,45479295,2.47,273.41
+12/14/2025,20190002,KG | Generic | Apparel,SEARCH,1535,47,61540026,0.0,0.0
+12/14/2025,20190003,KG | Generic | Drinkware,SEARCH,583,29,31222019,0.0,0.0
+12/14/2025,20190004,KG | Shopping | All Products,SHOPPING,662,36,34857830,1.16,56.5

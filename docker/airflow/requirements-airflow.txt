@@ -1,0 +1,16 @@
+# Installed with the official Airflow constraints file, which pins most transitive versions.
+apache-airflow[postgres]==3.3.2
+astronomer-cosmos==1.15.1
+dlt[clickhouse,filesystem,sql_database,parquet]==1.31.0
+clickhouse-connect
+google-cloud-bigquery
+s3fs
+psycopg2-binary
+openpyxl
+faker==40.42.0
+numpy
+pandas
+pyarrow
+requests
+google-genai
+sqlglot

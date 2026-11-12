@@ -1,0 +1,124 @@
+version: 2
+
+models:
+  # ── shop ──────────────────────────────────────────────────────────────────
+  - name: stg_shop__customers
+    description: Latest version of each customer. Email is a salted hash; names, phone and street data are dropped.
+    columns:
+      - { name: customer_id, tests: [unique, not_null] }
+      - { name: customer_email_hash, tests: [not_null] }
+
+  - name: stg_shop__products
+    description: Latest version of each product, with list price and unit cost.
+    columns:
+      - { name: product_id, tests: [unique, not_null] }
+
+  - name: stg_shop__orders
+    description: Latest version of each order. Statuses are kept as delivered; which count as revenue is decided downstream.
+    columns:
+      - { name: order_id, tests: [unique, not_null] }
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships: { arguments: { to: ref('stg_shop__customers'), field: customer_id } }
+      - name: order_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: [placed, paid, payment_failed, shipped, delivered, cancelled]
+
+  - name: stg_shop__order_items
+    description: Order lines with gross and net (after line discount) value.
+    columns:
+      - { name: order_item_id, tests: [unique, not_null] }
+      - name: order_id
+        tests:
+          - relationships: { arguments: { to: ref('stg_shop__orders'), field: order_id } }
+      - name: product_id
+        tests:
+          - relationships: { arguments: { to: ref('stg_shop__products'), field: product_id } }
+
+  - name: stg_shop__refunds
+    description: Refunds issued against orders.
+    columns:
+      - { name: refund_id, tests: [unique, not_null] }
+      - name: order_id
+        tests:
+          - relationships: { arguments: { to: ref('stg_shop__orders'), field: order_id } }
+
+  # ── GA4 ───────────────────────────────────────────────────────────────────
+  - name: stg_ga4__events
+    description: One row per GA4 funnel event, with event_params unpacked and dates shifted into the simulation window.
+    columns:
+      - { name: event_date, tests: [not_null] }
+      - { name: session_key, tests: [not_null] }
+      - name: event_name
+        tests:
+          - accepted_values:
+              arguments:
+                values: [session_start, first_visit, view_item, add_to_cart, begin_checkout, add_shipping_info, add_payment_info, purchase]
+
+  - name: stg_ga4__purchase_items
+    description: One row per item on a GA4 purchase event.
+    columns:
+      - { name: product_id, tests: [not_null] }
+
+  # ── paid media ────────────────────────────────────────────────────────────
+  - name: stg_meta_ads__daily
+    description: Meta Ads by day, campaign and ad set, in USD, deduplicated across re-exports.
+    columns:
+      - { name: ad_key, tests: [unique, not_null] }
+      - name: campaign_slug
+        description: Fails when an export contains a campaign missing from the campaign_mapping seed.
+        tests: [not_null]
+      - name: currency
+        tests:
+          - accepted_values: { arguments: { values: [USD, GBP, EUR] } }
+
+  - name: stg_google_ads__daily
+    description: Google Ads by day and campaign, in USD.
+    columns:
+      - { name: ad_key, tests: [unique, not_null] }
+      - name: campaign_slug
+        description: Fails when an export contains a campaign missing from the campaign_mapping seed.
+        tests: [not_null]
+
+  # ── email ─────────────────────────────────────────────────────────────────
+  - name: stg_email__events
+    description: Email events in UTC, deduplicated by event id, addresses hashed.
+    columns:
+      - { name: event_id, tests: [unique, not_null] }
+      - name: event_type
+        tests:
+          - accepted_values:
+              arguments:
+                values: [email_sent, email_open, email_click, email_unsubscribe]
+
+  # ── finance ───────────────────────────────────────────────────────────────
+  - name: stg_budget__monthly
+    description: Budget and revenue target per channel and month; the newest workbook version wins.
+    columns:
+      - name: channel
+        description: Fails when finance introduces a channel label missing from the budget_channel_mapping seed.
+        tests: [not_null]
+      - name: metric
+        tests:
+          - accepted_values: { arguments: { values: [budget_usd, revenue_target_usd] } }
+
+  # ── external ──────────────────────────────────────────────────────────────
+  - name: stg_holidays__public_holidays
+    description: Public holidays for the US and UK.
+    columns:
+      - { name: holiday_date, tests: [not_null] }
+
+  - name: stg_weather__daily
+    description: Daily weather for the five demand cities.
+    columns:
+      - { name: weather_date, tests: [not_null] }
+      - { name: city, tests: [not_null] }
+
+  - name: stg_fred__observations
+    description: FRED macro series (consumer sentiment, CPI, retail sales).
+    columns:
+      - { name: observation_date, tests: [not_null] }
+      - { name: series_id, tests: [not_null] }

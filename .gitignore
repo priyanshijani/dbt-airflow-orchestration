@@ -1,0 +1,33 @@
+# secrets — never commit (06_GOVERNANCE, R8)
+.env
+secrets/
+*.json.key
+*-sa.json
+
+# data/generated/ IS committed: the seeded output of `python -m generators.run` (16 MB). bootstrap
+# skips generation when it is present; `make regenerate` rebuilds it byte for byte (ADR-024).
+reports/*.md
+!reports/.gitkeep
+proposals/*.patch
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# dbt
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+
+# airflow
+logs/
+airflow/logs/
+
+# os / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

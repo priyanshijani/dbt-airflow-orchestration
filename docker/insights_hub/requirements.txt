@@ -1,0 +1,5 @@
+streamlit==1.65.0
+clickhouse-connect==1.10.1
+plotly==6.3.0
+pandas==3.0.5
+requests==2.32.5

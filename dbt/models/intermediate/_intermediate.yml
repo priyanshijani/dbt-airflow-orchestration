@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: int_orders__revenue
+    description: One row per order with the revenue rules applied (which statuses count, net of refunds).
+    columns:
+      - { name: order_id, tests: [unique, not_null] }
+  - name: int_ga4__sessions
+    description: One row per GA4 session with funnel flags and first-touch channel inputs.
+    columns:
+      - { name: session_key, tests: [unique, not_null] }
+  - name: int_orders__attributed
+    description: Last-click channel for each order, with the basis used.
+    columns:
+      - { name: order_id, tests: [unique, not_null] }
+      - name: channel
+        tests:
+          - accepted_values:
+              arguments:
+                values: [paid_social, paid_search, email, organic_direct_referral]
+
+unit_tests:
+  - name: revenue_rules_count_paid_orders_net_of_refunds
+    description: Delivered orders count, net of discount and refunds; cancelled orders count as zero.
+    model: int_orders__revenue
+    given:
+      - input: ref('stg_shop__orders')
+        rows:
+          - { order_id: 1, customer_id: 1, order_status: delivered, subtotal_usd: 100, discount_usd: 10, order_date: '2026-01-01' }
+          - { order_id: 2, customer_id: 1, order_status: cancelled, subtotal_usd: 50, discount_usd: 0, order_date: '2026-01-01' }
+      - input: ref('stg_shop__refunds')
+        rows:
+          - { order_id: 1, amount_usd: 20 }
+    expect:
+      rows:
+        - { order_id: 1, counts_as_revenue: true, net_revenue_usd: 70 }
+        - { order_id: 2, counts_as_revenue: false, net_revenue_usd: 0 }
+
+  - name: attribution_prefers_order_utm_then_ga4_then_default
+    description: The order UTM wins; without it the GA4 first touch decides; without either, organic/direct/referral.
+    model: int_orders__attributed
+    given:
+      - input: ref('int_orders__revenue')
+        rows:
+          - { order_id: 1, utm_medium: paid_social, ga_session_id: 11, ga_user_pseudo_id: u1, counts_as_revenue: true }
+          - { order_id: 2, utm_medium: null, ga_session_id: 22, ga_user_pseudo_id: u2, counts_as_revenue: true }
+          - { order_id: 3, utm_medium: null, ga_session_id: 33, ga_user_pseudo_id: u3, counts_as_revenue: true }
+      - input: ref('int_ga4__sessions')
+        rows:
+          - { ga_session_id: 11, user_pseudo_id: u1, first_touch_source: google, first_touch_medium: organic }
+          - { ga_session_id: 22, user_pseudo_id: u2, first_touch_source: google, first_touch_medium: cpc }
+      - input: ref('ga4_channel_mapping')
+        rows:
+          - { source: google, medium: cpc, channel: paid_search }
+          - { source: google, medium: organic, channel: organic_direct_referral }
+    expect:
+      rows:
+        - { order_id: 1, channel: paid_social, attribution_basis: order_utm }
+        - { order_id: 2, channel: paid_search, attribution_basis: ga4_first_touch }
+        - { order_id: 3, channel: organic_direct_referral, attribution_basis: default }

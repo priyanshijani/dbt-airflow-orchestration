@@ -1,0 +1,111 @@
+version: 2
+
+models:
+  - name: dim_channel
+    columns: [{ name: channel, tests: [unique, not_null] }]
+  - name: dim_date
+    columns: [{ name: date_day, tests: [unique, not_null] }]
+  - name: dim_products
+    columns: [{ name: product_id, tests: [unique, not_null] }]
+  - name: dim_customers
+    description: One row per customer. Email is a hash; no names or street data exist at this layer.
+    columns:
+      - { name: customer_id, tests: [unique, not_null] }
+
+  - name: fct_orders
+    description: One row per order that counts as revenue (paid, shipped, delivered), with channel and margin.
+    config: { contract: { enforced: true } }
+    columns:
+      - { name: order_id, data_type: UInt64, tests: [unique, not_null] }
+      - { name: order_date, data_type: Date }
+      - { name: customer_id, data_type: UInt64 }
+      - name: channel
+        data_type: String
+        tests:
+          - relationships: { arguments: { to: ref('dim_channel'), field: channel } }
+      - { name: attribution_basis, data_type: String }
+      - { name: utm_campaign, data_type: Nullable(String) }
+      - { name: discount_code, data_type: Nullable(String) }
+      - { name: gross_revenue_usd, data_type: "Decimal(18, 2)" }
+      - { name: refunded_usd, data_type: "Decimal(18, 2)" }
+      - { name: net_revenue_usd, data_type: "Decimal(18, 2)", tests: [not_null] }
+      - { name: units, data_type: UInt64 }
+      - { name: gross_margin_usd, data_type: "Decimal(18, 2)" }
+      - { name: is_first_order, data_type: Bool }
+
+  - name: fct_sessions
+    columns:
+      - { name: session_key, tests: [unique, not_null] }
+      - name: channel
+        tests:
+          - relationships: { arguments: { to: ref('dim_channel'), field: channel } }
+
+  - name: fct_marketing_spend
+    columns:
+      - { name: channel, tests: [not_null] }
+  - name: mart_channel_performance
+    description: Channel by day, one row per (report_date, channel).
+    config: { contract: { enforced: true } }
+    columns:
+      - { name: report_date, data_type: Date, tests: [not_null] }
+      - { name: channel, data_type: String, tests: [not_null] }
+      - { name: sessions, data_type: UInt64 }
+      - { name: orders, data_type: UInt64 }
+      - { name: new_customers, data_type: UInt64 }
+      - { name: net_revenue_usd, data_type: "Decimal(18, 2)" }
+      - { name: spend_usd, data_type: "Decimal(18, 2)" }
+      - { name: clicks, data_type: UInt64 }
+  - name: mart_kpi_daily
+    description: Headline KPIs by day. The AI narrator and the Insights Hub home page read this table.
+    config: { contract: { enforced: true } }
+    columns:
+      - { name: report_date, data_type: Date, tests: [unique, not_null] }
+      - { name: orders, data_type: UInt64 }
+      - { name: new_customers, data_type: UInt64 }
+      - { name: net_revenue_usd, data_type: "Decimal(18, 2)" }
+      - { name: sessions, data_type: UInt64 }
+      - { name: spend_usd, data_type: "Decimal(18, 2)" }
+      - { name: aov_usd, data_type: "Decimal(18, 2)" }
+      - { name: blended_roas, data_type: Float64 }
+      - { name: blended_cac_usd, data_type: "Decimal(18, 2)" }
+      - { name: conversion_rate, data_type: Float64 }
+  - name: mart_revenue_bridge
+    description: Week-over-week revenue change per channel, split into volume and price effects.
+    config: { contract: { enforced: true } }
+    columns:
+      - { name: week_start, data_type: Date }
+      - { name: channel, data_type: String }
+      - { name: revenue_usd, data_type: "Decimal(18, 2)" }
+      - { name: prior_revenue_usd, data_type: "Decimal(18, 2)" }
+      - { name: change_usd, data_type: "Decimal(18, 2)" }
+      - { name: volume_effect_usd, data_type: "Decimal(18, 2)" }
+      - { name: price_effect_usd, data_type: "Decimal(18, 2)" }
+  - name: mart_target_tracking
+  - name: mart_customer_cohorts
+
+unit_tests:
+  - name: revenue_bridge_effects_sum_to_change
+    description: A channel with more orders and a bigger basket; the two effects must add up to the change.
+    model: mart_revenue_bridge
+    given:
+      - input: ref('mart_channel_performance')
+        rows:
+          # prior week: 10 orders, $1,000 (AOV 100); this week: 12 orders, $1,500 (AOV 125)
+          - { report_date: '2025-11-03', channel: paid_social, orders: 10, net_revenue_usd: 1000 }
+          - { report_date: '2025-11-04', channel: paid_social, orders: 0, net_revenue_usd: 0 }
+          - { report_date: '2025-11-05', channel: paid_social, orders: 0, net_revenue_usd: 0 }
+          - { report_date: '2025-11-06', channel: paid_social, orders: 0, net_revenue_usd: 0 }
+          - { report_date: '2025-11-07', channel: paid_social, orders: 0, net_revenue_usd: 0 }
+          - { report_date: '2025-11-08', channel: paid_social, orders: 0, net_revenue_usd: 0 }
+          - { report_date: '2025-11-09', channel: paid_social, orders: 0, net_revenue_usd: 0 }
+          - { report_date: '2025-11-10', channel: paid_social, orders: 12, net_revenue_usd: 1500 }
+          - { report_date: '2025-11-11', channel: paid_social, orders: 0, net_revenue_usd: 0 }
+          - { report_date: '2025-11-12', channel: paid_social, orders: 0, net_revenue_usd: 0 }
+          - { report_date: '2025-11-13', channel: paid_social, orders: 0, net_revenue_usd: 0 }
+          - { report_date: '2025-11-14', channel: paid_social, orders: 0, net_revenue_usd: 0 }
+          - { report_date: '2025-11-15', channel: paid_social, orders: 0, net_revenue_usd: 0 }
+          - { report_date: '2025-11-16', channel: paid_social, orders: 0, net_revenue_usd: 0 }
+    expect:
+      rows:
+        # volume = (12 - 10) x 100 = 200; price = 1500 - 1000 - 200 = 300
+        - { week_start: '2025-11-10', channel: paid_social, revenue_usd: 1500, prior_revenue_usd: 1000, change_usd: 500, volume_effect_usd: 200, price_effect_usd: 300 }

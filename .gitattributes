@@ -1,0 +1,5 @@
+# Containers run Linux: keep scripts and configs LF even when cloned on Windows (R14)
+* text=auto eol=lf
+*.parquet binary
+*.xlsx binary
+*.png binary

@@ -1,0 +1,15 @@
+dtc_growth:
+  target: dev
+  outputs:
+    dev:
+      type: clickhouse
+      host: "{{ env_var('CLICKHOUSE_HOST', 'clickhouse') }}"
+      port: 8123
+      user: etl_writer
+      password: "{{ env_var('CLICKHOUSE_ETL_PASSWORD') }}"
+      # In dbt-clickhouse a "schema" is a ClickHouse database. This is only the default; every layer sets its own.
+      schema: staging
+      secure: false
+      threads: 2
+      connect_timeout: 30
+      send_receive_timeout: 900

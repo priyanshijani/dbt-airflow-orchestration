@@ -1,0 +1,27 @@
+<!-- Settings profiles. Guardrails for read-only consumers are enforced by the database,
+     not just by application code (06_GOVERNANCE §7). -->
+<clickhouse>
+    <profiles>
+        <default>
+            <max_threads>2</max_threads>
+            <max_memory_usage>1000000000</max_memory_usage>
+        </default>
+
+        <!-- AI agents: read-only, 10 s timeout, at most 500 rows returned -->
+        <agent_readonly>
+            <readonly>1</readonly>
+            <max_threads>2</max_threads>
+            <max_execution_time>10</max_execution_time>
+            <max_result_rows>500</max_result_rows>
+            <result_overflow_mode>break</result_overflow_mode>
+            <max_memory_usage>500000000</max_memory_usage>
+        </agent_readonly>
+
+        <!-- Insights Hub: read-only, generous enough for dashboards -->
+        <hub_readonly>
+            <readonly>1</readonly>
+            <max_threads>2</max_threads>
+            <max_execution_time>30</max_execution_time>
+        </hub_readonly>
+    </profiles>
+</clickhouse>

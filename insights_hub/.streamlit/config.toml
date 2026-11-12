@@ -1,0 +1,20 @@
+# Insights Hub theme (ADR-027): one navy ramp on a pale blue-grey page. Mounted at /app/.streamlit in the container.
+[theme]
+base = "light"
+primaryColor = "#0B3A75"
+backgroundColor = "#F3F6FA"
+secondaryBackgroundColor = "#E9EFF7"
+textColor = "#0F1E36"
+linkColor = "#2F6DB5"
+borderColor = "#DCE3EC"
+showWidgetBorder = true
+baseRadius = "10px"
+font = "Figtree:https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&display=swap, sans-serif"
+baseFontSize = 15
+dataframeHeaderBackgroundColor = "#F3F6FA"
+chartCategoricalColors = ["#0B3A75", "#2F6DB5", "#7FA8DA", "#BBD3EE"]
+showSidebarBorder = true
+
+[theme.sidebar]
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F3F6FA"

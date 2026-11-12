@@ -1,0 +1,4 @@
+# Installed into an isolated virtualenv (/opt/dbt-venv) so dbt's deps never clash with Airflow's.
+dbt-core==1.11.16
+dbt-adapters==1.24.5
+dbt-clickhouse==1.10.3

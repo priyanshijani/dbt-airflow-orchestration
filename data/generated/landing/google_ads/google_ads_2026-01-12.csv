@@ -1,0 +1,6 @@
+date,campaign_id,campaign_name,advertising_channel_type,impressions,clicks,cost_micros,conversions,conversions_value
+01/12/2026,20190001,KG | Brand | Exact,SEARCH,1850,77,44539541,1.24,60.93
+01/12/2026,20190002,KG | Generic | Apparel,SEARCH,702,48,66711684,0.0,0.0
+01/12/2026,20190003,KG | Generic | Drinkware,SEARCH,422,28,27864089,0.0,0.0
+01/12/2026,20190004,KG | Shopping | All Products,SHOPPING,863,34,42567999,2.35,219.32
+01/12/2026,20260001,KG | PMax | New Year,PERFORMANCE_MAX,14032,20,348327858,5.34,585.85

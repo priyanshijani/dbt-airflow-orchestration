@@ -1,0 +1,12 @@
+platform,campaign_name,campaign_slug,channel
+meta,Prospecting - Broad,prospecting_broad,paid_social
+meta,Prospecting - Lookalike 2%,prospecting_lal2,paid_social
+meta,Retargeting - DPA,retargeting_dpa,paid_social
+meta,UK | Prospecting,uk_prospecting,paid_social
+meta,EU | Prospecting,eu_prospecting,paid_social
+meta,BFCM Sale 2025,bfcm_2025,paid_social
+google,KG | Brand | Exact,brand_exact,paid_search
+google,KG | Generic | Apparel,generic_apparel,paid_search
+google,KG | Generic | Drinkware,generic_drinkware,paid_search
+google,KG | Shopping | All Products,shopping_all,paid_search
+google,KG | PMax | New Year,pmax_new_year,paid_search

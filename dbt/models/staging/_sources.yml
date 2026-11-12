@@ -1,0 +1,78 @@
+version: 2
+
+# Raw tables are named <source>___<table> inside the `raw` database (ADR-022), hence `identifier`.
+# Freshness is measured on load time (dlt's _dlt_load_id is an epoch string), generous enough for a demo.
+sources:
+  - name: shop
+    description: Kestrel Goods store database (Postgres), loaded incrementally by updated_at.
+    schema: raw
+    meta: { owner: Head of Engineering, domain: orders }
+    freshness: { warn_after: { count: 3, period: day }, error_after: { count: 30, period: day } }
+    loaded_at_field: "toDateTime(toUInt64(toFloat64(_dlt_load_id)))"
+    tables:
+      - { name: customers,   identifier: shop___customers }
+      - { name: products,    identifier: shop___products }
+      - { name: orders,      identifier: shop___orders }
+      - { name: order_items, identifier: shop___order_items }
+      - { name: refunds,     identifier: shop___refunds }
+
+  - name: ga4
+    description: GA4 funnel events from the public BigQuery sample (original 2020-21 calendar).
+    schema: raw
+    meta: { owner: Head of Growth, domain: web_analytics }
+    freshness: { warn_after: { count: 3, period: day }, error_after: { count: 30, period: day } }
+    loaded_at_field: "toDateTime(_loaded_at)"
+    tables:
+      - { name: events, identifier: ga4___events }
+
+  - name: meta_ads
+    description: Meta Ads daily CSV exports. Columns are text, as delivered.
+    schema: raw
+    meta: { owner: Performance marketing lead, domain: paid_media }
+    freshness: { warn_after: { count: 3, period: day }, error_after: { count: 30, period: day } }
+    loaded_at_field: "toDateTime(toUInt64(toFloat64(_dlt_load_id)))"
+    tables:
+      - { name: daily, identifier: meta_ads___meta_ads_daily }
+
+  - name: google_ads
+    description: Google Ads agency CSV exports. Cost is in micros, dates are MM/DD/YYYY text.
+    schema: raw
+    meta: { owner: Performance marketing lead, domain: paid_media }
+    freshness: { warn_after: { count: 3, period: day }, error_after: { count: 30, period: day } }
+    loaded_at_field: "toDateTime(toUInt64(toFloat64(_dlt_load_id)))"
+    tables:
+      - { name: daily, identifier: google_ads___google_ads_daily }
+
+  - name: email
+    description: Email platform events as JSON lines (send, open, click, unsubscribe).
+    schema: raw
+    meta: { owner: CRM manager, domain: email }
+    freshness: { warn_after: { count: 3, period: day }, error_after: { count: 30, period: day } }
+    loaded_at_field: "toDateTime(toUInt64(toFloat64(_dlt_load_id)))"
+    tables:
+      - { name: events, identifier: email___email_events }
+
+  - name: budget
+    description: Finance budget and revenue-target workbook, flattened to channel x month x metric.
+    schema: raw
+    meta: { owner: FP&A lead, domain: finance }
+    tables:
+      - { name: monthly, identifier: budget___budget_monthly }
+
+  - name: holidays
+    schema: raw
+    meta: { owner: Analytics engineering, domain: external }
+    tables:
+      - { name: public_holidays, identifier: holidays___public_holidays }
+
+  - name: weather
+    schema: raw
+    meta: { owner: Analytics engineering, domain: external }
+    tables:
+      - { name: daily, identifier: weather___daily }
+
+  - name: fred
+    schema: raw
+    meta: { owner: Analytics engineering, domain: external }
+    tables:
+      - { name: observations, identifier: fred___observations }
